@@ -1,4 +1,4 @@
-function __prompt_git_info
+function __git_info
 
   # simulates pseudo-`dict` feature in fish
   # https://stackoverflow.com/a/60191660
