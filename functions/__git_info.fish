@@ -81,15 +81,6 @@ function __git_info
     functions -e __action
   end
 
-  function _git_stash_info
-    set stashed (command git stash list 2> /dev/null | wc -l | awk '{print $1}')
-    if test -n "$stashed"
-      echo -n (set_color blue)"✭ $stashed"(set_color normal)
-    end
-
-    functions -e _git_stash_info
-  end
-
   function _git_branch_info
     set ahead_and_behind (command git rev-list --count --left-right 'HEAD...@{upstream}' 2> /dev/null)
     if test -n "$ahead_and_behind"
@@ -180,9 +171,23 @@ function __git_info
         end
       end
 
+      # stashed -- %S
+      if test -n $FISH_GIT_INFO_STASHED
+        set -l commondir ''
+        if test -f "$git_dir/commondir"
+          set commondir (cat "$git_dir/commondir")
+          if string match -vr '^/' -- "$commondir"
+            set commondir "$git_dir/$commondir"
+          end
+        end
+        if test -f "$git_dir/refs/stash"; or test -n "$commondir"; and test -f "$commondir/refs/stash"
+          set -l stashed (command git stash list 2> /dev/null | wc -l | awk '{print $1}')
+          set_field S (printf "$FISH_GIT_INFO_STASHED" $stashed)
+        end
+      end
+
       print_results
 
-      _git_stash_info
       _git_status_info
     end
   end
