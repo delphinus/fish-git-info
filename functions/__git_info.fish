@@ -14,7 +14,7 @@ function __git_info
     set git_dir $argv[1]
 
     for dir in "$git_dir/rebase-apply" "$git_dir/rebase" "$git_dir/../.dotest"
-      if test -d $dir
+      if test -d "$dir"
         set -q FISH_GIT_INFO_ACTION_REBASE; or set -g FISH_GIT_INFO_ACTION_REBASE rebase
         set -q FISH_GIT_INFO_ACTION_APPLY; or set -g FISH_GIT_INFO_ACTION_APPLY apply
         if test -f "$dir/rebasing"
@@ -29,7 +29,7 @@ function __git_info
     end
 
     for file in "$git_dir/rebase-merge/interactive" "$git_dir/.dotest-merge/interactive"
-      if test -f $file
+      if test -f "$file"
         set -q FISH_GIT_INFO_ACTION_REBASE_INTERACTIVE; or set -g FISH_GIT_INFO_ACTION_REBASE_INTERACTIVE rebase-interactive
         echo -n $FISH_GIT_INFO_ACTION_REBASE_INTERACTIVE
         return 0
@@ -37,7 +37,7 @@ function __git_info
     end
 
     for dir in "$git_dir/rebase-merge" "$git_dir/.dotest-merge"
-      if test -d $dir
+      if test -d "$dir"
         set -q FISH_GIT_INFO_ACTION_REBASE_MERGE; or set -g FISH_GIT_INFO_ACTION_REBASE_MERGE rebase-merge
         echo -n $FISH_GIT_INFO_ACTION_REBASE_MERGE
         return 0
@@ -164,7 +164,7 @@ function __git_info
       end
 
       # action -- %s
-      if test -n $FISH_GIT_INFO_ACTION
+      if test -n "$FISH_GIT_INFO_ACTION"
         set action (__action "$git_dir")
         if test -n "$action"
           set_field s (printf "$FISH_GIT_INFO_ACTION" "$action")
@@ -185,7 +185,7 @@ function __git_info
       end
 
       # stashed -- %S
-      if test -n $FISH_GIT_INFO_STASHED
+      if test -n "$FISH_GIT_INFO_STASHED"
         set commondir ''
         if test -f "$git_dir/commondir"
           set commondir (cat "$git_dir/commondir")
