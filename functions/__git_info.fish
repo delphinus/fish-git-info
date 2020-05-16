@@ -141,12 +141,12 @@ function __git_info
   end
 
   if test -n "$FISH_GIT_INFO"
-    set git_dir (git rev-parse --git-dir 2> /dev/null)
+    set -l git_dir (git rev-parse --git-dir 2> /dev/null)
     if test -n "$git_dir"
 
       # branch -- %b
       if test -n "$FISH_GIT_INFO_BRANCH"
-        set branch (command git symbolic-ref HEAD 2> /dev/null | perl -pe 's,^refs/heads/,,')
+        set -l branch (command git symbolic-ref HEAD 2> /dev/null | perl -pe 's,^refs/heads/,,')
         if test -n "$branch"
           set_field b (printf "$FISH_GIT_INFO_BRANCH" "$branch")
         end
@@ -154,7 +154,7 @@ function __git_info
 
       # position -- %p
       if test -n "$FISH_GIT_INFO_POSITION"
-        set position (command git describe --contains --all HEAD 2> /dev/null)
+        set -l position (command git describe --contains --all HEAD 2> /dev/null)
         if test -n "$position"
           if test -n "$branch"; and test "$branch" != "$position"
             set_field p (printf "$FISH_GIT_INFO_POSITION" "$position")
@@ -166,7 +166,7 @@ function __git_info
 
       # commit -- %c
       if test -n "$FISH_GIT_INFO_COMMIT"
-        set commit (command git rev-parse HEAD 2> /dev/null | cut -c-7)
+        set -l commit (command git rev-parse HEAD 2> /dev/null | cut -c-7)
         if test -n "$commit"
           set_field c (printf "$FISH_GIT_INFO_COMMIT" "$commit")
         end
