@@ -81,7 +81,7 @@ function __git_info
     functions -e __action
   end
 
-  function _git_status_info
+  function __set_verbose_status
     set git_status (command git status --porcelain)
     if test -n "$git_status"
       set added 0
@@ -90,6 +90,7 @@ function __git_info
       set renamed 0
       set unmerged 0
       set untracked 0
+      set dirty 0
       for line in $git_status
         string match -r '^([ACDMT][ MT]|[ACMT]D) *' $line > /dev/null ;and set added (math $added + 1)
         string match -r '^[ ACMRT]D *]' $line > /dev/null ;and set deleted (math $deleted + 1)
@@ -97,17 +98,76 @@ function __git_info
         string match -r '^R. *' $line > /dev/null ;and set renamed (math $renamed + 1)
         string match -r '^(AA|DD|U.|.U) *' $line > /dev/null ;and set unmerged (math $unmerged + 1)
         string match -r '^\?\? *' $line > /dev/null ;and set untracked (math $untracked + 1)
+        set dirty (math $dirty + 1)
       end
 
-      test $added -ne 0 ;and echo -n (set_color green)"✚ $added"(set_color normal)
-      test $deleted -ne 0 ;and echo -n (set_color red)"✖ $deleted"(set_color normal)
-      test $modified -ne 0 ;and echo -n (set_color blue)"✱ $modified"(set_color normal)
-      test $renamed -ne 0 ;and echo -n (set_color magenta)"➜ $renamed"(set_color normal)
-      test $unmerged -ne 0 ;and echo -n (set_color blue)"═ $unmerged"(set_color normal)
-      test $untracked -ne 0 ;and echo -n (set_color white)"◼ $untracked"(set_color normal)
+      # added -- %a
+      # deleted -- %d
+      # modified -- %m
+      # renamed -- %r
+      # unmerged -- %U
+      # untracked -- %u
+      test -n "$FISH_GIT_INFO_ADDED"; and test $added -ne 0; and set_field a (printf "$FISH_GIT_INFO_ADDED" $added)
+      test -n "$FISH_GIT_INFO_DELETED"; and test $deleted -ne 0; and set_field d (printf "$FISH_GIT_INFO_DELETED" $deleted)
+      test -n "$FISH_GIT_INFO_MODIFIED"; and test $modified -ne 0; and set_field m (printf "$FISH_GIT_INFO_MODIFIED" $modified)
+      test -n "$FISH_GIT_INFO_RENAMED"; and test $renamed -ne 0; and set_field r (printf "$FISH_GIT_INFO_RENAMED" $renamed)
+      test -n "$FISH_GIT_INFO_UNMERGED"; and test $unmerged -ne 0; and set_field U (printf "$FISH_GIT_INFO_UNMERGED" $unmerged)
+      test -n "$FISH_GIT_INFO_UNTRACKED"; and test $untracked -ne 0; and set_field u (printf "$FISH_GIT_INFO_UNTRACKED" $untracked)
+      echo -n $dirty
     end
 
-    functions -e _git_status_info
+    functions -e __set_verbose_status
+  end
+
+  function __set_simple_status
+    # indexed -- %i
+    set indexed 0
+    if test -n "$FISH_GIT_INFO_INDEXED"
+      set indexed (command git diff-index \
+        --no-ext-diff \
+        --name-only \
+        --cached \
+        HEAD \
+        2> /dev/null \
+      | wc -l)
+      if test $indexed -ne 0
+        set_field i (printf "$FISH_GIT_INFO_INDEXED" $indexed)
+      end
+    end
+
+    # unindexed -- %I
+    set unindexed 0
+    if test -n "$FISH_GIT_INFO_UNINDEXED"
+      set unindexed (command git diff-files \
+        --no-ext-diff \
+        --name-only \
+        2> /dev/null \
+      | wc -l)
+      if test $unindexed -ne 0
+        set_field I (printf "$FISH_GIT_INFO_UNINDEXED" $unindexed)
+      end
+    end
+
+    # untracked -- %u
+    set untracked 0
+    if test -n "$FISH_GIT_INFO_UNTRACKED"
+      set untracked (command git ls-files \
+        --other \
+        --exclude-standard \
+        2> /dev/null \
+      | wc -l)
+      if test $untracked -ne 0
+        set_field u (printf "$FISH_GIT_INFO_UNTRACKED" $untracked)
+      end
+    end
+
+    echo -n (math $indexed + $unindexed + $untracked)
+
+    functions -e __set_simple_status
+  end
+
+  function __set_simple_status
+    functions -e __set_simple_status
   end
 
   function print_results
@@ -187,9 +247,22 @@ function __git_info
         end
       end
 
-      print_results
+      # dirty -- %D
+      # clean -- %C
+      if test -n "$FISH_GIT_INFO_VERBOSE"
+        set dirty (__set_verbose_status)
+      else
+        set dirty (__set_simple_status)
+      end
+      if test $dirty -ne 0
+        if test -n "$FISH_GIT_INFO_DIRTY"; and test $dirty -ne 0
+          set_field D (printf "$FISH_GIT_INFO_DIRTY" $dirty)
+        end
+      else if test -n "$FISH_GIT_INFO_CLEAN"
+        set_field C (printf "$FISH_GIT_INFO_CLEAN")
+      end
 
-      _git_status_info
+      print_results
     end
   end
 end
