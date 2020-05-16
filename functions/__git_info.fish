@@ -81,18 +81,6 @@ function __git_info
     functions -e __action
   end
 
-  function _git_branch_info
-    set ahead_and_behind (command git rev-list --count --left-right 'HEAD...@{upstream}' 2> /dev/null)
-    if test -n "$ahead_and_behind"
-      set ahead (echo -n $ahead_and_behind | cut -f1)
-      set behind (echo -n $ahead_and_behind | cut -f2)
-      test $ahead -ne 0 ;and echo -n (set_color brmagenta)" ⬆ $ahead"(set_color normal)
-      test $behind -ne 0 ;and echo -n (set_color brmagenta)" ⬇ $behind"(set_color normal)
-    end
-
-    functions -e _git_branch_info
-  end
-
   function _git_status_info
     set git_status (command git status --porcelain)
     if test -n "$git_status"
