@@ -11,7 +11,7 @@ function __git_info
   end
 
   function __action
-    set -l git_dir $argv[1]
+    set git_dir $argv[1]
 
     for dir in "$git_dir/rebase-apply" "$git_dir/rebase" "$git_dir/../.dotest"
       if test -d $dir
@@ -137,7 +137,7 @@ function __git_info
 
       # branch -- %b
       if test -n "$FISH_GIT_INFO_BRANCH"
-        set -l branch (command git symbolic-ref HEAD 2> /dev/null | perl -pe 's,^refs/heads/,,')
+        set branch (command git symbolic-ref HEAD 2> /dev/null | perl -pe 's,^refs/heads/,,')
         if test -n "$branch"
           set_field b (printf "$FISH_GIT_INFO_BRANCH" "$branch")
         end
@@ -145,7 +145,7 @@ function __git_info
 
       # position -- %p
       if test -n "$FISH_GIT_INFO_POSITION"
-        set -l position (command git describe --contains --all HEAD 2> /dev/null)
+        set position (command git describe --contains --all HEAD 2> /dev/null)
         if test -n "$position"
           if test -n "$branch"; and test "$branch" != "$position"
             set_field p (printf "$FISH_GIT_INFO_POSITION" "$position")
@@ -157,7 +157,7 @@ function __git_info
 
       # commit -- %c
       if test -n "$FISH_GIT_INFO_COMMIT"
-        set -l commit (command git rev-parse HEAD 2> /dev/null | cut -c-7)
+        set commit (command git rev-parse HEAD 2> /dev/null | cut -c-7)
         if test -n "$commit"
           set_field c (printf "$FISH_GIT_INFO_COMMIT" "$commit")
         end
@@ -165,7 +165,7 @@ function __git_info
 
       # action -- %s
       if test -n $FISH_GIT_INFO_ACTION
-        set -l action (__action "$git_dir")
+        set action (__action "$git_dir")
         if test -n "$action"
           set_field s (printf "$FISH_GIT_INFO_ACTION" "$action")
         end
@@ -173,7 +173,7 @@ function __git_info
 
       # stashed -- %S
       if test -n $FISH_GIT_INFO_STASHED
-        set -l commondir ''
+        set commondir ''
         if test -f "$git_dir/commondir"
           set commondir (cat "$git_dir/commondir")
           if string match -vr '^/' -- "$commondir"
@@ -181,7 +181,7 @@ function __git_info
           end
         end
         if test -f "$git_dir/refs/stash"; or test -n "$commondir"; and test -f "$commondir/refs/stash"
-          set -l stashed (command git stash list 2> /dev/null | wc -l | awk '{print $1}')
+          set stashed (command git stash list 2> /dev/null | wc -l | awk '{print $1}')
           set_field S (printf "$FISH_GIT_INFO_STASHED" $stashed)
         end
       end
