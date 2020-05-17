@@ -76,8 +76,6 @@ function __git_info
       echo -n $FISH_GIT_INFO_ACTION_BISECT
       return 0
     end
-
-    functions -e __action
   end
 
   function __set_verbose_status
@@ -115,8 +113,6 @@ function __git_info
     end
 
     echo -n $dirty
-
-    functions -e __set_verbose_status
   end
 
   function __set_simple_status
@@ -162,8 +158,6 @@ function __git_info
     end
 
     echo -n (math $indexed + $unindexed + $untracked)
-
-    functions -e __set_simple_status
   end
 
   if test -n "$FISH_GIT_INFO"
@@ -258,4 +252,8 @@ function __git_info
       printf "$format" $results
     end
   end
+
+  functions -e __action
+  functions -e __set_verbose_status
+  functions -e __set_simple_status
 end
