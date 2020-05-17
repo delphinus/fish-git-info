@@ -166,15 +166,6 @@ function __git_info
     functions -e __set_simple_status
   end
 
-  function print_results
-    for key in (string match -ar %. "$FISH_GIT_INFO")
-      set i (string replace % '' $key)
-      set -a results (get_field $i)(set_color normal)
-    end
-    set format (string replace -ar %. %s "$FISH_GIT_INFO")
-    printf "$format" $results
-  end
-
   if test -n "$FISH_GIT_INFO"
     set -l git_dir (git rev-parse --git-dir 2> /dev/null)
     if test -n "$git_dir"
@@ -258,7 +249,13 @@ function __git_info
         set_field C (printf "$FISH_GIT_INFO_CLEAN")
       end
 
-      print_results
+      # print results
+      for key in (string match -ar %. "$FISH_GIT_INFO")
+        set i (string replace % '' $key)
+        set -a results (get_field $i)(set_color normal)
+      end
+      set format (string replace -ar %. %s "$FISH_GIT_INFO")
+      printf "$format" $results
     end
   end
 end
