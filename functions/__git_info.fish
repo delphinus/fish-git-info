@@ -1,7 +1,6 @@
 function __git_info
 
   # simulates pseudo-`dict` feature in fish
-  # https://stackoverflow.com/a/60191660
   function set_field --argument-names key value
     set -g '__git_fish__'$key $value
   end
