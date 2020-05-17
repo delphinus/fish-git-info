@@ -82,6 +82,7 @@ function __git_info
   end
 
   function __set_verbose_status
+    set dirty 0
     set git_status (command git status --porcelain)
     if test -n "$git_status"
       set added 0
@@ -90,7 +91,6 @@ function __git_info
       set renamed 0
       set unmerged 0
       set untracked 0
-      set dirty 0
       for line in $git_status
         string match -r '^([ACDMT][ MT]|[ACMT]D) *' $line > /dev/null ;and set added (math $added + 1)
         string match -r '^[ ACMRT]D *]' $line > /dev/null ;and set deleted (math $deleted + 1)
@@ -113,8 +113,9 @@ function __git_info
       test -n "$FISH_GIT_INFO_RENAMED"; and test $renamed -ne 0; and set_field r (printf "$FISH_GIT_INFO_RENAMED" $renamed)
       test -n "$FISH_GIT_INFO_UNMERGED"; and test $unmerged -ne 0; and set_field U (printf "$FISH_GIT_INFO_UNMERGED" $unmerged)
       test -n "$FISH_GIT_INFO_UNTRACKED"; and test $untracked -ne 0; and set_field u (printf "$FISH_GIT_INFO_UNTRACKED" $untracked)
-      echo -n $dirty
     end
+
+    echo -n $dirty
 
     functions -e __set_verbose_status
   end
@@ -163,10 +164,6 @@ function __git_info
 
     echo -n (math $indexed + $unindexed + $untracked)
 
-    functions -e __set_simple_status
-  end
-
-  function __set_simple_status
     functions -e __set_simple_status
   end
 
@@ -255,7 +252,7 @@ function __git_info
         set dirty (__set_simple_status)
       end
       if test $dirty -ne 0
-        if test -n "$FISH_GIT_INFO_DIRTY"; and test $dirty -ne 0
+        if test -n "$FISH_GIT_INFO_DIRTY"
           set_field D (printf "$FISH_GIT_INFO_DIRTY" $dirty)
         end
       else if test -n "$FISH_GIT_INFO_CLEAN"
