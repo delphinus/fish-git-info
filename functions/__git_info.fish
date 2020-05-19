@@ -204,12 +204,14 @@ function __git_info
       # behind -- %B
       if test -n "$branch"; and test -n "$FISH_GIT_INFO_AHEAD" || test -n "$FISH_GIT_INFO_BEHIND"
         set -l ahead_and_behind_string (command git rev-list --count --left-right 'HEAD...@{upstream}' 2> /dev/null)
-        set ahead_and_behind (string match -ar '\d+' "$ahead_and_behind_string")
-        if test -n "$FISH_GIT_INFO_AHEAD"; and test $ahead_and_behind[1] -ne 0
-          set_field A (printf "$FISH_GIT_INFO_AHEAD" $ahead_and_behind[1])
-        end
-        if test -n "$FISH_GIT_INFO_BEHIND"; and test $ahead_and_behind[2] -ne 0
-          set_field B (printf "$FISH_GIT_INFO_BEHIND" $ahead_and_behind[2])
+        if test -n "$ahead_and_behind_string"
+          set ahead_and_behind (string match -ar '\d+' "$ahead_and_behind_string")
+          if test -n "$FISH_GIT_INFO_AHEAD"; and test $ahead_and_behind[1] -ne 0
+            set_field A (printf "$FISH_GIT_INFO_AHEAD" $ahead_and_behind[1])
+          end
+          if test -n "$FISH_GIT_INFO_BEHIND"; and test $ahead_and_behind[2] -ne 0
+            set_field B (printf "$FISH_GIT_INFO_BEHIND" $ahead_and_behind[2])
+          end
         end
       end
 
