@@ -198,7 +198,7 @@ function __git_info -d 'Parse the output and print infos from `git status`'
 
       # position -- %p
       if test -n "$FISH_GIT_INFO_POSITION"
-        set position (command git describe --contains --all HEAD 2> /dev/null)
+        set position (command git describe --contains --all HEAD 2> /dev/null | perl -pe 's,^remotes/origin/,,')
         if test -n "$position"
           if test -n "$branch"; and test "$branch" != "$position"
             set_field p (printf "$FISH_GIT_INFO_POSITION" "$position")
