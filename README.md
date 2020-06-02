@@ -27,8 +27,6 @@ freely.
 
 2. (optional but **highly recommended**) add [fish-async-prompt][].
 
-[fish-async-prompt]: https://github.com/acomagu/fish-async-prompt
-
    ```fish
    fisher add acomagu/fish-async-prompt
    ```
@@ -44,6 +42,8 @@ freely.
      __git_info  # <-- add this line
    end
    ```
+
+[fish-async-prompt]: https://github.com/acomagu/fish-async-prompt
 
 ### manual
 
