@@ -1,4 +1,33 @@
-function __git_info
+set -x __loaded_git_info
+
+function __check_settings --no-scope-shadowing
+  test -n "$FISH_GIT_INFO";           or set -x FISH_GIT_INFO           '%b%p%c:%s%A%B%S%a%d%m%r%U%u%D%C'
+  test -n "$FISH_GIT_INFO_VERBOSE";   or set -x FISH_GIT_INFO_VERBOSE   yes
+  test -n "$FISH_GIT_INFO_ACTION";    or set -x FISH_GIT_INFO_ACTION    (set_color -o brred)%s      # %s
+  test -n "$FISH_GIT_INFO_BRANCH";    or set -x FISH_GIT_INFO_BRANCH    (set_color -o green)'%s '   # %b
+  test -n "$FISH_GIT_INFO_POSITION";  or set -x FISH_GIT_INFO_POSITION  (set_color brmagenta)'%s '  # %p
+  test -n "$FISH_GIT_INFO_COMMIT";    or set -x FISH_GIT_INFO_COMMIT    (set_color yellow)%s        # %c
+  test -n "$FISH_GIT_INFO_STASHED";   or set -x FISH_GIT_INFO_STASHED   (set_color blue)'✭ %d'      # %S
+  test -n "$FISH_GIT_INFO_AHEAD";     or set -x FISH_GIT_INFO_AHEAD     (set_color brmagenta)'⬆ %d' # %A
+  test -n "$FISH_GIT_INFO_BEHIND";    or set -x FISH_GIT_INFO_BEHIND    (set_color brmagenta)'⬇ %d' # %B
+  test -n "$FISH_GIT_INFO_ADDED";     or set -x FISH_GIT_INFO_ADDED     (set_color green)'✚ %d'     # %a
+  test -n "$FISH_GIT_INFO_DELETED";   or set -x FISH_GIT_INFO_DELETED   (set_color red)'✖ %d'       # %d
+  test -n "$FISH_GIT_INFO_MODIFIED";  or set -x FISH_GIT_INFO_MODIFIED  (set_color blue)'✱ %d'      # %m
+  test -n "$FISH_GIT_INFO_RENAMED";   or set -x FISH_GIT_INFO_RENAMED   (set_color magenta)'➜ %d'   # %r
+  test -n "$FISH_GIT_INFO_UNMERGED";  or set -x FISH_GIT_INFO_UNMERGED  (set_color blue)'═ %d'      # %U
+  test -n "$FISH_GIT_INFO_UNTRACKED"; or set -x FISH_GIT_INFO_UNTRACKED (set_color white)'◼ %d'     # %u
+  test -n "$FISH_GIT_INFO_INDEXED";   or set -x FISH_GIT_INFO_INDEXED   (set_color brblue)'◆ %d'    # %i
+  test -n "$FISH_GIT_INFO_UNINDEXED"; or set -x FISH_GIT_INFO_UNINDEXED (set_color brblue)'◇ %d'    # %I
+  test -n "$FISH_GIT_INFO_DIRTY";     or set -x FISH_GIT_INFO_DIRTY     (set_color brred)'✖ '       # %D
+  test -n "$FISH_GIT_INFO_CLEAN";     or set -x FISH_GIT_INFO_CLEAN     (set_color -o brgreen)'✔ '  # %C
+end
+
+function __git_info -d 'Parse the output of `git status`'
+
+  if test -z "$FISH_GIT_INFO"
+    set -x __loaded_git_info 1
+    __check_settings
+  end
 
   # simulates pseudo-`dict` feature in fish
   function set_field --argument-names key value
