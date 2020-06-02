@@ -278,8 +278,4 @@ function __git_info -d 'Parse the output and print infos from `git status`'
       printf "$format" $results
     end
   end
-
-  functions -e __action
-  functions -e __set_verbose_status
-  functions -e __set_simple_status
 end
